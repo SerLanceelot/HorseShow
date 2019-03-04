@@ -10,23 +10,32 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.example.horseshow.MainActivity.EXTRA_MESSAGE;
+
 public class competitor_activity extends AppCompatActivity {
 
-
+    private static final String FILE_NAME = "people_competiting.txt";
     String[] riders_plus_horse_list;
     private ListView lvItems;
     private List<Product> lstProducts;
@@ -40,6 +49,11 @@ public class competitor_activity extends AppCompatActivity {
     InputStream inputStreamLoader;
     BufferedReader bufferedReaderLoader;
 
+    // simplefile name--- Do not allow the path.
+    private String simpleFileName = "people_competiting.txt";
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,11 +61,12 @@ public class competitor_activity extends AppCompatActivity {
 
         //get Intent that started this activity and extract the string
         Intent intent = getIntent();
-        String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        String message = intent.getStringExtra(EXTRA_MESSAGE);
 
         //capture layout TextVeiw and set the string as its text
-        TextView compititon_name = findViewById(R.id.compeitionName2);
+        TextView compititon_name = findViewById(R.id.compeitionName3);
         compititon_name.setText(message);
+
 
         /* Code above is to connect to previous screen, code below is for the list view */
 
@@ -62,12 +77,14 @@ public class competitor_activity extends AppCompatActivity {
         lvItems.setAdapter(new CountdownAdapter(competitor_activity.this, lstProducts));
 
 
+        String filepath = getExternalFilesDir(FILE_NAME).getAbsolutePath();
+        File file = new File(filepath, "people_competiting.txt");
         //connect Inputstream andd buffer into text file and each other, counters
-        inputStreamCounter = this.getResources().openRawResource(R.raw.people_competiting);
+        inputStreamCounter = new ByteArrayInputStream(Charset.forName("UTF-16").encode(message).array());//getResources().openRawResource(R.raw.people_competiting);
         bufferedReaderCounter = new BufferedReader(new InputStreamReader(inputStreamCounter));
 
         //loaders
-        inputStreamLoader = this.getResources().openRawResource(R.raw.people_competiting);
+        inputStreamLoader = new ByteArrayInputStream(Charset.forName("UTF-16").encode(message).array());//this.getResources().openRawResource(R.raw.people_competiting);
         bufferedReaderLoader = new BufferedReader(new InputStreamReader(inputStreamLoader));
 
         //count number of rows/lines in text file
@@ -81,24 +98,27 @@ public class competitor_activity extends AppCompatActivity {
 
         riders_plus_horse_list = new String[intCount];
 
-        //load rows or lines into string array
-        try {
-            int j = 255000; // about 4.5 minutes
-            for (int i = 0; i < intCount; i++) {
-                riders_plus_horse_list[i] = bufferedReaderLoader.readLine();
-                lstProducts.add(new Product(riders_plus_horse_list[i], System.currentTimeMillis() + j));
-                j = j+255000;
-            }
 
-        } catch (Exception e) {
+        //load rows or lines into string array
+
+        try {
+
+
+                int j = 255000; // about 4.5 minutes
+                for (int i = 0; i < intCount; i++) {
+                    riders_plus_horse_list[i] = bufferedReaderLoader.readLine();
+                    lstProducts.add(new Product(riders_plus_horse_list[i], System.currentTimeMillis() + j));
+                    j = j + 255000; //add another 4.5 min
+                }
+
+        }catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        catch (IOException e) {
+                e.printStackTrace();
+        }
 
-        //Define adapter
-        //ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, android.R.id.text1, riders_plus_horse_list);
 
-        //assign adaper object to listview object
-        //lvItems.setAdapter(adapter);
 
         lvItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -108,6 +128,8 @@ public class competitor_activity extends AppCompatActivity {
 
         });
     }
+
+
 
     private class Product {
     String name;

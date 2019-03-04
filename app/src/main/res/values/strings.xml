@@ -3,7 +3,8 @@
     <string name="welcome">Enter Horse Competition name</string>
     <string name="button1">Enter</string>
     <string name="horse_rider">Enter Riders Name and Horses name</string>
-    <string name="button2">Enter</string>
+    <string name="button2">Save</string>
+    <string name="button3">Load</string>
     <string name="dawelcome">Welcome to the Horse Show App </string>
     <string name="logo">Horse on two legs with pretty background</string>
     <string name="show_time">Ready to enter the Show?</string>
