@@ -79,7 +79,7 @@ public class competitor_activity extends AppCompatActivity {
 
         String filepath = getExternalFilesDir(FILE_NAME).getAbsolutePath();
         File file = new File(filepath, "people_competiting.txt");
-        //connect Inputstream andd buffer into text file and each other, counters
+        //connect Inputstream and buffer into text file and each other, counters
         inputStreamCounter = new ByteArrayInputStream(Charset.forName("UTF-16").encode(message).array());//getResources().openRawResource(R.raw.people_competiting);
         bufferedReaderCounter = new BufferedReader(new InputStreamReader(inputStreamCounter));
 
